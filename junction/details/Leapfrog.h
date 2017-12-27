@@ -246,7 +246,7 @@ struct Leapfrog {
                 // Switch to linear probing until we reserve a new cell or find a late-arriving cell in the same bucket.
                 ureg prevLinkIdx = idx;
                 TURF_ASSERT(sreg(maxIdx - idx) >= 0); // Nobody would have linked an idx that's out of range.
-                ureg linearProbesRemaining = turf::util::min(maxIdx - idx, LinearSearchLimit);
+                ureg linearProbesRemaining = (turf::util::min)(maxIdx - idx, LinearSearchLimit);
                 while (linearProbesRemaining-- > 0) {
                     idx++;
                     group = table->getCellGroups() + ((idx & sizeMask) >> 2);
@@ -357,7 +357,7 @@ struct Leapfrog {
             estimatedInUse /= 4;
         }
 #endif
-        ureg nextTableSize = turf::util::max(InitialSize, turf::util::roundUpPowerOf2(ureg(estimatedInUse * 2)));
+        ureg nextTableSize = (turf::util::max)(InitialSize, turf::util::roundUpPowerOf2(ureg(estimatedInUse * 2)));
         beginTableMigrationToSize(map, table, nextTableSize);
     }
 }; // Leapfrog
@@ -365,7 +365,7 @@ struct Leapfrog {
 template <class Map>
 bool Leapfrog<Map>::TableMigration::migrateRange(Table* srcTable, ureg startIdx) {
     ureg srcSizeMask = srcTable->sizeMask;
-    ureg endIdx = turf::util::min(startIdx + TableMigrationUnitSize, srcSizeMask + 1);
+    ureg endIdx = (turf::util::min)(startIdx + TableMigrationUnitSize, srcSizeMask + 1);
     // Iterate over source range.
     for (ureg srcIdx = startIdx; srcIdx < endIdx; srcIdx++) {
         CellGroup* srcGroup = srcTable->getCellGroups() + ((srcIdx & srcSizeMask) >> 2);

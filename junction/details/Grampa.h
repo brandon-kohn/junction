@@ -417,7 +417,7 @@ struct Grampa {
                 // Switch to linear probing until we reserve a new cell or find a late-arriving cell in the same bucket.
                 ureg prevLinkIdx = idx;
                 TURF_ASSERT(sreg(maxIdx - idx) >= 0); // Nobody would have linked an idx that's out of range.
-                ureg linearProbesRemaining = turf::util::min(maxIdx - idx, LinearSearchLimit);
+                ureg linearProbesRemaining = (turf::util::min)(maxIdx - idx, LinearSearchLimit);
                 while (linearProbesRemaining-- > 0) {
                     idx++;
                     group = table->getCellGroups() + ((idx & sizeMask) >> 2);
@@ -533,7 +533,7 @@ struct Grampa {
         float estimatedInUse = (sizeMask + 1) * inUseRatio;
         ureg nextTableSize = turf::util::roundUpPowerOf2(ureg(estimatedInUse * 2));
         // FIXME: Support migrating to smaller tables.
-        nextTableSize = turf::util::max(nextTableSize, sizeMask + 1);
+        nextTableSize = (turf::util::max)(nextTableSize, sizeMask + 1);
         // Split into multiple tables if necessary.
         ureg splitShift = 0;
         while (nextTableSize > LeafSize) {
@@ -565,7 +565,7 @@ sreg Grampa<Map>::TableMigration::migrateRange(Table* srcTable, ureg startIdx) {
     ureg safeShift = m_safeShift;
     Table** dstLeafs = getDestinations();
     ureg dstLeafMask = m_numDestinations - 1;
-    ureg endIdx = turf::util::min(startIdx + TableMigrationUnitSize, srcSizeMask + 1);
+    ureg endIdx = (turf::util::min)(startIdx + TableMigrationUnitSize, srcSizeMask + 1);
     // Iterate over source range.
     for (ureg srcIdx = startIdx; srcIdx < endIdx; srcIdx++) {
         CellGroup* srcGroup = srcTable->getCellGroups() + ((srcIdx & srcSizeMask) >> 2);
@@ -844,7 +844,7 @@ void Grampa<Map>::FlatTreeMigration::run() {
         if (srcStart >= srcSize)
             break; // No more migration units in this flattree.
         // Migrate this range
-        ureg srcEnd = turf::util::min(srcSize, srcStart + FlatTreeMigrationUnitSize);
+        ureg srcEnd = (turf::util::min)(srcSize, srcStart + FlatTreeMigrationUnitSize);
         ureg dst = srcStart * repeat;
         for (ureg src = srcStart; src < srcEnd; src++) {
             // Pointers in the source table can be changed at any time due to concurrent subtree publishing,

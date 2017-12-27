@@ -252,7 +252,7 @@ struct Linear {
                 estimatedInUse /= 4;
             }
 #endif
-            nextTableSize = turf::util::max(InitialSize, turf::util::roundUpPowerOf2(ureg(estimatedInUse * 2)));
+            nextTableSize = (turf::util::max)(InitialSize, turf::util::roundUpPowerOf2(ureg(estimatedInUse * 2)));
         }
         beginTableMigrationToSize(map, table, nextTableSize);
     }
@@ -261,7 +261,7 @@ struct Linear {
 template <class Map>
 bool Linear<Map>::TableMigration::migrateRange(Table* srcTable, ureg startIdx) {
     ureg srcSizeMask = srcTable->sizeMask;
-    ureg endIdx = turf::util::min(startIdx + TableMigrationUnitSize, srcSizeMask + 1);
+    ureg endIdx = (turf::util::min)(startIdx + TableMigrationUnitSize, srcSizeMask + 1);
     // Iterate over source range.
     for (ureg srcIdx = startIdx; srcIdx < endIdx; srcIdx++) {
         Cell* srcCell = srcTable->getCells() + (srcIdx & srcSizeMask);

@@ -113,7 +113,10 @@ else()
 endif()
 
 # Define library target.
+project(junction)
 add_library(junction ${JUNCTION_FILES})
+target_include_directories(junction INTERFACE $<BUILD_INTERFACE:${junction_SOURCE_DIR}> $<INSTALL_INTERFACE:include>)
+target_include_directories(junction INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include> $<INSTALL_INTERFACE:include>)
 
 # Set include dirs for this library (done last, so it's not inherited by subprojects like Tervel, NBDS).
 include_directories(${JUNCTION_ALL_INCLUDE_DIRS})
@@ -134,3 +137,7 @@ if(NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(JUNCTION_ALL_DLLS "${JUNCTION_ALL_DLLS}" PARENT_SCOPE)
 endif()
 
+# Deployment
+install ( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/junction/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/junction FILES_MATCHING PATTERN "*.h")
+install ( DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/junction FILES_MATCHING PATTERN "*.h")
+install (TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}" LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")

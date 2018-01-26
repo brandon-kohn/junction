@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.5)
+cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 	# If this is the root project, issue a project() command so that
@@ -117,6 +117,10 @@ project(junction)
 add_library(junction ${JUNCTION_FILES})
 target_include_directories(junction INTERFACE $<BUILD_INTERFACE:${junction_SOURCE_DIR}> $<INSTALL_INTERFACE:include>)
 target_include_directories(junction INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include> $<INSTALL_INTERFACE:include>)
+set_target_properties(junction PROPERTIES
+	CXX_STANDARD 11
+	CXX_STANDARD_REQUIRED YES 
+	CXX_EXTENSIONS YES)
 
 # Set include dirs for this library (done last, so it's not inherited by subprojects like Tervel, NBDS).
 include_directories(${JUNCTION_ALL_INCLUDE_DIRS})

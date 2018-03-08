@@ -53,7 +53,7 @@ struct GrampaStats {
 };
 #endif
 
-JUNCTION_API TURF_TRACE_DECLARE(Grampa, 37)
+ TURF_TRACE_DECLARE(JUNCTION_API, Grampa, 37)
 
 template <class Map>
 struct Grampa {

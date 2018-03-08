@@ -27,7 +27,7 @@
 namespace junction {
 namespace details {
 
-JUNCTION_API TURF_TRACE_DECLARE(Leapfrog, 33)
+TURF_TRACE_DECLARE(JUNCTION_API, Leapfrog, 33)
 
 template <class Map>
 struct Leapfrog {

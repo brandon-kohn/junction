@@ -15,14 +15,14 @@
 
 #if JUNCTION_WITH_NBDS && NBDS_USE_TURF_HEAP
 extern "C" {
-void mem_init(void) {
+JUNCTION_API void mem_init(void) {
 }
 
-void* nbd_malloc(size_t n) {
+JUNCTION_API void* nbd_malloc(size_t n) {
     return TURF_HEAP.alloc(n);
 }
 
-void nbd_free(void* x) {
+JUNCTION_API void nbd_free(void* x) {
     TURF_HEAP.free(x);
 }
 } // extern "C"

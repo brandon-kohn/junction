@@ -30,7 +30,7 @@
 namespace junction {
 namespace details {
 
-TURF_TRACE_DECLARE(Linear, 27)
+JUNCTION_API TURF_TRACE_DECLARE(Linear, 27)
 
 template <class Map>
 struct Linear {

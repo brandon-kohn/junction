@@ -27,7 +27,7 @@
 namespace junction {
 namespace striped {
 
-class ConditionBank {
+class JUNCTION_API ConditionBank {
 private:
     static const ureg SizeMask = 1023;
     turf::Mutex_SpinLock m_initSpinLock;
@@ -48,7 +48,7 @@ public:
     }
 };
 
-extern ConditionBank DefaultConditionBank;
+JUNCTION_API extern ConditionBank DefaultConditionBank;
 
 } // namespace striped
 } // namespace junction

@@ -21,7 +21,7 @@
 
 namespace junction {
 
-TURF_TRACE_DECLARE(ConcurrentMap_Linear, 17)
+JUNCTION_API TURF_TRACE_DECLARE(ConcurrentMap_Linear, 17)
 
 template <typename K, typename V, class KT = DefaultKeyTraits<K>, class VT = DefaultValueTraits<V> >
 class ConcurrentMap_Linear {

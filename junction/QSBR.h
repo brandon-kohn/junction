@@ -21,7 +21,7 @@
 
 namespace junction {
 
-class QSBR {
+class JUNCTION_API QSBR {
 private:
     struct Action {
         void (*func)(void*);
@@ -84,7 +84,7 @@ public:
     void flush();
 };
 
-extern QSBR DefaultQSBR;
+JUNCTION_API extern QSBR DefaultQSBR;
 
 } // junction
 

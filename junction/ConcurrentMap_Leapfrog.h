@@ -21,7 +21,7 @@
 
 namespace junction {
 
-TURF_TRACE_DECLARE(ConcurrentMap_Leapfrog, 17)
+JUNCTION_API TURF_TRACE_DECLARE(ConcurrentMap_Leapfrog, 17)
 
 template <typename K, typename V, class KT = DefaultKeyTraits<K>, class VT = DefaultValueTraits<V> >
 class ConcurrentMap_Leapfrog {

@@ -21,7 +21,7 @@
 #define JUNCTION_USE_STRIPING 1
 #endif
 //-----------------------------------------------
-
+#include <junction/JunctionExport.h>
 #include <turf/Core.h>
 #include <turf/Assert.h>
 #include <turf/Atomic.h>

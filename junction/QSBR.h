@@ -84,7 +84,7 @@ public:
     void flush();
 };
 
-JUNCTION_API extern QSBR DefaultQSBR;
+JUNCTION_API QSBR& DefaultQSBR();
 
 } // junction
 

@@ -18,7 +18,11 @@
 
 namespace junction {
 
-JUNCTION_API QSBR DefaultQSBR;
+JUNCTION_API QSBR& DefaultQSBR() 
+{
+    static QSBR instance;
+    return instance;
+}
 
 QSBR::Context QSBR::createContext() {
     turf::LockGuard<turf::Mutex> guard(m_mutex);

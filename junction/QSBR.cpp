@@ -24,6 +24,17 @@ JUNCTION_API QSBR& DefaultQSBR()
     return instance;
 }
 
+QSBR::QSBR() 
+	: m_freeIndex(-1)
+	, m_numContexts(0)
+	, m_remaining(0) 
+{}
+
+QSBR::~QSBR() 
+{
+
+}
+
 QSBR::Context QSBR::createContext() {
     turf::LockGuard<turf::Mutex> guard(m_mutex);
     TURF_RACE_DETECT_GUARD(m_flushRaceDetector);

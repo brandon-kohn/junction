@@ -59,8 +59,8 @@ private:
 public:
     typedef u16 Context;
 
-    QSBR() : m_freeIndex(-1), m_numContexts(0), m_remaining(0) {
-    }
+    QSBR();
+    ~QSBR();
     Context createContext();
     void destroyContext(Context context);
 

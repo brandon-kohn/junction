@@ -80,6 +80,22 @@ public:
         m_deferredActions.push_back(Action(Closure::thunk, &closure, sizeof(closure)));
     }
 
+    template <typename Fn, typename T>
+    void enqueue_function(Fn&& f, T* target) {
+        struct Closure {
+            Fn f;
+            T* target;
+            static void thunk(void* param) {
+                Closure* self = (Closure*) param;
+                f(*self->target);
+            }
+        };
+        Closure closure = {std::forward<F>(f), target};
+        turf::LockGuard<turf::Mutex> guard(m_mutex);
+        TURF_RACE_DETECT_GUARD(m_flushRaceDetector);
+        m_deferredActions.push_back(Action(Closure::thunk, &closure, sizeof(closure)));
+    }
+
     void update(Context context);
     void flush();
 };

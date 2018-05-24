@@ -90,7 +90,7 @@ public:
                 self->f(self->target);
             }
         };
-        Closure closure = {std::forward<F>(f), target};
+        Closure closure = {std::forward<Fn>(f), target};
         turf::LockGuard<turf::Mutex> guard(m_mutex);
         TURF_RACE_DETECT_GUARD(m_flushRaceDetector);
         m_deferredActions.push_back(Action(Closure::thunk, &closure, sizeof(closure)));

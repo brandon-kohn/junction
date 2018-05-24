@@ -87,7 +87,7 @@ public:
             T* target;
             static void thunk(void* param) {
                 Closure* self = (Closure*) param;
-                f(self->target);
+                self->f(self->target);
             }
         };
         Closure closure = {std::forward<F>(f), target};

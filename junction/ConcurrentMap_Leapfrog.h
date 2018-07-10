@@ -125,8 +125,9 @@ public:
     ConcurrentMap_Leapfrog(ureg capacity = Details::InitialSize) : m_root(Details::Table::create(capacity)) {
     }
 
-    ConcurrentMap_Leapfrog(const MemoryReclamationPolicy& memPolicy, ureg capacity = Details::InitialSize) 
+    ConcurrentMap_Leapfrog(MemoryReclamationPolicy const& memPolicy, ureg capacity = Details::InitialSize) 
         : m_root(Details::Table::create(capacity)) 
+        //, m_memoryPolicy(std::forward<MemoryReclamationPolicy>(memPolicy))
         , m_memoryPolicy(memPolicy)
     {}
 

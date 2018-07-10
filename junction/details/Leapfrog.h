@@ -565,7 +565,8 @@ endMigration:
     }
 
     // We're done with this TableMigration. Queue it for GC.
-    DefaultQSBR().enqueue(&TableMigration::destroy, this);
+    m_map.reclaimMemory(&TableMigration::destroy, this);
+    //DefaultQSBR().enqueue(&TableMigration::destroy, this);
 }
 
 } // namespace details

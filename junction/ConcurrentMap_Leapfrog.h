@@ -21,28 +21,50 @@
 
 namespace junction {
 
+struct DefaultMemoryReclamationPolicy
+{
+    template <typename ...Args>
+    void operator()(Args&&... a) const
+    {
+        DefaultQSBR()::enqueue(std::forward<Args>(a)...);
+    }
+};
+
 TURF_TRACE_DECLARE(JUNCTION_API, ConcurrentMap_Leapfrog, 17)
 
-template <typename K, typename V, class KT = DefaultKeyTraits<K>, class VT = DefaultValueTraits<V> >
+template <typename K, typename V, class KT = DefaultKeyTraits<K>, class VT = DefaultValueTraits<V>, class MemoryReclamationPolicy = DefaultMemoryReclamationPolicy >
 class ConcurrentMap_Leapfrog {
 public:
     typedef K Key;
     typedef V Value;
     typedef KT KeyTraits;
     typedef VT ValueTraits;
+    typedef MemoryPolicy = MemoryReclamationPolicy;
     typedef typename turf::util::BestFit<Key>::Unsigned Hash;
     typedef details::Leapfrog<ConcurrentMap_Leapfrog> Details;
 
 private:
     turf::Atomic<typename Details::Table*> m_root;
+    MemoryPolicy m_memoryPolicy;
 
 public:
     ConcurrentMap_Leapfrog(ureg capacity = Details::InitialSize) : m_root(Details::Table::create(capacity)) {
     }
 
+    ConcurrentMap_Leapfrog(const MemoryReclamationPolicy& memPolicy, ureg capacity = Details::InitialSize) 
+        : m_root(Details::Table::create(capacity)) 
+        , m_memoryPolicy(memPolicy)
+    {}
+
     ~ConcurrentMap_Leapfrog() {
         typename Details::Table* table = m_root.loadNonatomic();
         table->destroy();
+    }
+
+    template <typename ...Args>
+    void reclaimMemory(Args&&... a)
+    {
+        m_memoryPolicy(std::forward<Args>(a)...);
     }
 
     // publishTableMigration() is called by exactly one thread from Details::TableMigration::run()

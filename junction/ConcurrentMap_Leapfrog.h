@@ -23,29 +23,103 @@ namespace junction {
 
 struct DefaultMemoryReclamationPolicy
 {
-    template <typename ...Args>
-    void operator()(Args&&... a) const
+    template <typename Callable>
+    void operator()(Callable&& c) const
     {
-        DefaultQSBR()::enqueue(std::forward<Args>(a)...);
+        DefaultQSBR().enqueue_callable(std::forward<Callable>(c));
     }
+    
+    template <typename T>
+    void operator()(void(T::*pmf)(), T* target) const
+    {
+        DefaultQSBR().enqueue_mem_fun(pmf, target);
+    }
+
+    template <class T>
+    void reclaim_via_mem_fun(void (T::*pmf)(), T* target) 
+    {
+        DefaultQSBR().enqueue_mem_fun(pmf, target);
+    }
+
+    template <typename Fn, typename T>
+    void reclaim_via_callable(Fn&& f, T* target) 
+    {
+        DefaultQSBR().enqueue_callable(std::forward<Fn>(f), target);
+    }
+
+    template <typename Fn, typename T>
+    void reclaim_via_defaultable_callable(T* target) 
+    {
+        DefaultQSBR().enqueue_defaultable_callable<Fn>(target);
+    }
+
+    void quiesce() const
+    {
+        DefaultQSBR().flush();
+    }
+};
+
+struct QSBRMemoryReclamationPolicy
+{
+    QSBRMemoryReclamationPolicy(QSBR* qsbr = &DefaultQSBR())
+        : m_qsbr(qsbr)
+    {}
+
+    template <typename Callable>
+    void operator()(Callable&& c) const
+    {
+        m_qsbr->enqueue_callable(std::forward<Callable>(c));
+    }
+    
+    template <typename T>
+    void operator()(void(T::*pmf)(), T* target) const
+    {
+        m_qsbr->enqueue_mem_fun(pmf, target);
+    }
+
+    template <class T>
+    void reclaim_via_mem_fun(void (T::*pmf)(), T* target) 
+    {
+        m_qsbr->enqueue_mem_fun(pmf, target);     
+    }
+
+    template <typename Fn, typename T>
+    void reclaim_via_callable(Fn&& f, T* target) 
+    {
+        m_qsbr->enqueue_callable(std::forward<Fn>(f), target);    
+    }
+
+    template <typename Fn, typename T>
+    void reclaim_via_defaultable_callable(T* target) 
+    {
+        m_qsbr->enqueue_defaultable_callable<Fn>(target);
+    }
+
+    void quiesce() const
+    {
+        m_qsbr->flush();
+    }
+
+private:
+    QSBR* m_qsbr;
 };
 
 TURF_TRACE_DECLARE(JUNCTION_API, ConcurrentMap_Leapfrog, 17)
 
-template <typename K, typename V, class KT = DefaultKeyTraits<K>, class VT = DefaultValueTraits<V>, class MemoryReclamationPolicy = DefaultMemoryReclamationPolicy >
+template <typename K, typename V, class KT = DefaultKeyTraits<K>, class VT = DefaultValueTraits<V>, class MRP = DefaultMemoryReclamationPolicy >
 class ConcurrentMap_Leapfrog {
 public:
     typedef K Key;
     typedef V Value;
     typedef KT KeyTraits;
     typedef VT ValueTraits;
-    typedef MemoryPolicy = MemoryReclamationPolicy;
+    typedef MRP MemoryReclamationPolicy;
     typedef typename turf::util::BestFit<Key>::Unsigned Hash;
     typedef details::Leapfrog<ConcurrentMap_Leapfrog> Details;
 
 private:
     turf::Atomic<typename Details::Table*> m_root;
-    MemoryPolicy m_memoryPolicy;
+    mutable MemoryReclamationPolicy m_memoryPolicy;
 
 public:
     ConcurrentMap_Leapfrog(ureg capacity = Details::InitialSize) : m_root(Details::Table::create(capacity)) {
@@ -66,6 +140,11 @@ public:
     {
         m_memoryPolicy(std::forward<Args>(a)...);
     }
+
+	MemoryReclamationPolicy& getMemoryReclaimer() const 
+	{
+		return m_memoryPolicy; 
+	}
 
     // publishTableMigration() is called by exactly one thread from Details::TableMigration::run()
     // after all the threads participating in the migration have completed their work.

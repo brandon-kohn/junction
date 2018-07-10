@@ -37,15 +37,15 @@ public:
         }
 
         void registerThread() {
-            m_qsbrContext = DefaultQSBR.createContext();
+            m_qsbrContext = DefaultQSBR().createContext();
         }
 
         void unregisterThread() {
-            DefaultQSBR.destroyContext(m_qsbrContext);
+            DefaultQSBR().destroyContext(m_qsbrContext);
         }
 
         void update() {
-            DefaultQSBR.update(m_qsbrContext);
+            DefaultQSBR().update(m_qsbrContext);
         }
     };
 

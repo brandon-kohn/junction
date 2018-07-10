@@ -59,8 +59,8 @@ private:
 public:
     typedef u16 Context;
 
-    QSBR() : m_freeIndex(-1), m_numContexts(0), m_remaining(0) {
-    }
+    QSBR();
+    ~QSBR();
     Context createContext();
     void destroyContext(Context context);
 
@@ -80,11 +80,41 @@ public:
         m_deferredActions.push_back(Action(Closure::thunk, &closure, sizeof(closure)));
     }
 
+    template <typename Fn, typename T>
+    void enqueue_function(Fn&& f, T* target) {
+        struct Closure {
+            Fn f;
+            T* target;
+            static void thunk(void* param) {
+                Closure* self = (Closure*) param;
+                self->f(self->target);
+            }
+        };
+        Closure closure = {std::forward<Fn>(f), target};
+        turf::LockGuard<turf::Mutex> guard(m_mutex);
+        TURF_RACE_DETECT_GUARD(m_flushRaceDetector);
+        m_deferredActions.push_back(Action(Closure::thunk, &closure, sizeof(closure)));
+    }
+
+    template <typename Fn, typename T>
+    void enqueue(T* target) {
+        struct Closure {
+            T* target;
+            static void thunk(void* param) {
+                Closure* self = (Closure*) param;
+                Fn()(self->target);
+            }
+        };
+        Closure closure = {target};
+        turf::LockGuard<turf::Mutex> guard(m_mutex);
+        TURF_RACE_DETECT_GUARD(m_flushRaceDetector);
+        m_deferredActions.push_back(Action(Closure::thunk, &closure, sizeof(closure)));
+    }
     void update(Context context);
     void flush();
 };
 
-JUNCTION_API extern QSBR DefaultQSBR;
+JUNCTION_API QSBR& DefaultQSBR();
 
 } // junction
 

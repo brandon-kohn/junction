@@ -206,6 +206,10 @@ public:
             exchangeValue(desired);
         }
 
+		bool isValid() {
+            return m_cell != nullptr;    
+		}
+
         Value eraseValue() {
             TURF_ASSERT(m_cell); // Cell must have been found or inserted
             TURF_TRACE(ConcurrentMap_Leapfrog, 11, "[Mutator::eraseValue] called", uptr(m_table), uptr(m_cell));

@@ -314,12 +314,12 @@ struct Grampa {
 
     static void garbageCollectTable(Table* table) {
         TURF_ASSERT(table);
-        DefaultQSBR.enqueue(&Table::destroy, table);
+        DefaultQSBR().enqueue(&Table::destroy, table);
     }
 
     static void garbageCollectFlatTree(FlatTree* flatTree) {
         TURF_ASSERT(flatTree);
-        DefaultQSBR.enqueue(&FlatTree::destroy, flatTree);
+        DefaultQSBR().enqueue(&FlatTree::destroy, flatTree);
     }
 
     static Cell* find(Hash hash, Table* table, ureg sizeMask) {
@@ -817,7 +817,7 @@ endMigration:
     }
 
     // We're done with this TableMigration. Queue it for GC.
-    DefaultQSBR.enqueue(&TableMigration::destroy, this);
+    DefaultQSBR().enqueue(&TableMigration::destroy, this);
 }
 
 template <class Map>
@@ -881,7 +881,7 @@ void Grampa<Map>::FlatTreeMigration::run() {
     m_completed.signal();
 
     // We're done with this FlatTreeMigration. Queue it for GC.
-    DefaultQSBR.enqueue(&FlatTreeMigration::destroy, this);
+    DefaultQSBR().enqueue(&FlatTreeMigration::destroy, this);
 }
 
 } // namespace details

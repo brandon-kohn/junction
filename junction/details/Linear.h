@@ -459,7 +459,7 @@ endMigration:
     }
 
     // We're done with this TableMigration. Queue it for GC.
-    DefaultQSBR().enqueue(&TableMigration::destroy, this);
+    DefaultQSBR().enqueue_mem_fun(&TableMigration::destroy, this);
 }
 
 } // namespace details

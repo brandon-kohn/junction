@@ -409,6 +409,12 @@ public:
         Value m_value;
 
     public:
+        
+        Iterator()
+            : m_table(nullptr)
+            , m_value(Value_Traits::NullValue)
+        {}
+        
         Iterator(ConcurrentMap_Leapfrog& map) {
             // Since we've forbidden concurrent inserts (for now), nonatomic would suffice here, but let's plan ahead:
             m_table = map.m_root.load(turf::Consume);

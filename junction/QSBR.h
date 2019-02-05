@@ -64,8 +64,9 @@ public:
     Context createContext();
     void destroyContext(Context context);
 
+    //! Convenience for calling a member function to reclaim.
     template <class T>
-    void enqueue(void (T::*pmf)(), T* target) {
+    void enqueue_mem_fun(void (T::*pmf)(), T* target) {
         struct Closure {
             void (T::*pmf)();
             T* target;
@@ -80,8 +81,25 @@ public:
         m_deferredActions.push_back(Action(Closure::thunk, &closure, sizeof(closure)));
     }
 
+    //! Add a nullary callable which encapsulates the reclamation. This is probably the best default going forward.
+    template <typename Fn>
+    void enqueue_callable(Fn&& f) {
+        struct Closure {
+            Fn f;
+            static void thunk(void* param) {
+                Closure* self = (Closure*) param;
+                self->f();
+            }
+        };
+        Closure closure = {std::forward<Fn>(f)};
+        turf::LockGuard<turf::Mutex> guard(m_mutex);
+        TURF_RACE_DETECT_GUARD(m_flushRaceDetector);
+        m_deferredActions.push_back(Action(Closure::thunk, &closure, sizeof(closure)));
+    }
+
+    //! Add a unary callable with the target to be reclaimed. (TODO: bind? lambda?)
     template <typename Fn, typename T>
-    void enqueue_function(Fn&& f, T* target) {
+    void enqueue_callable(Fn&& f, T* target) {
         struct Closure {
             Fn f;
             T* target;
@@ -96,8 +114,9 @@ public:
         m_deferredActions.push_back(Action(Closure::thunk, &closure, sizeof(closure)));
     }
 
+    //! Add a default constructible type which is the reclaimer and the target to be reclaimed (saves memory?)
     template <typename Fn, typename T>
-    void enqueue(T* target) {
+    void enqueue_defaultable_callable(T* target) {
         struct Closure {
             T* target;
             static void thunk(void* param) {

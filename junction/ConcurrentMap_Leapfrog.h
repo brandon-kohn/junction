@@ -412,7 +412,7 @@ public:
         
         Iterator()
             : m_table(nullptr)
-            , m_value(Value_Traits::NullValue)
+            , m_value(ValueTraits::NullValue)
         {}
         
         Iterator(ConcurrentMap_Leapfrog& map) {
@@ -420,6 +420,16 @@ public:
             m_table = map.m_root.load(turf::Consume);
             m_idx = -1;
             next();
+        }
+
+        bool operator ==(const Iterator& rhs) const
+        {
+            return (!isValid() && !rhs.isValid()) || (m_table == rhs.m_table && m_idx == rhs.m_idx && m_hash == rhs.m_hash && m_value == rhs.m_value);
+        }
+        
+        bool operator !=(const Iterator& rhs) const
+        {
+            return !((*this) == rhs);
         }
 
         void next() {

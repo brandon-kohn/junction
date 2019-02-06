@@ -412,7 +412,7 @@ public:
         
         Iterator()
             : m_table(nullptr)
-            , m_value(ValueTraits::NullValue)
+            , m_value((Value)ValueTraits::NullValue)
         {}
         
         Iterator(ConcurrentMap_Leapfrog& map) {

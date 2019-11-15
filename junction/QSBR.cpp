@@ -51,7 +51,7 @@ QSBR::Context QSBR::createContext() {
         context = m_status.size();
         m_status.push_back(Status());
     }
-    return context;
+    return static_cast<QSBR::Context>(context);
 }
 
 void QSBR::destroyContext(QSBR::Context context) {

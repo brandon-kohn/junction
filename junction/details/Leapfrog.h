@@ -258,7 +258,7 @@ struct Leapfrog {
                             // Success. We've reserved the cell. Link it to previous cell in same bucket.
                             TURF_TRACE(Leapfrog, 9, "[insertOrFind] reserved cell", uptr(table), idx);
                             TURF_ASSERT(probeDelta == 0);
-                            u8 desiredDelta = idx - prevLinkIdx;
+                            u8 desiredDelta = static_cast<u8>(idx - prevLinkIdx);
 #if TURF_WITH_ASSERTS
                             probeDelta = prevLink->exchange(desiredDelta, turf::Relaxed);
                             TURF_ASSERT(probeDelta == 0 || probeDelta == desiredDelta);
@@ -284,7 +284,7 @@ struct Leapfrog {
                         // This is usually redundant, but if we don't attempt to set the late-arriving cell's link here,
                         // there's no guarantee that our own link chain will be well-formed by the time this function returns.
                         // (Indeed, subsequent lookups sometimes failed during testing, for this exact reason.)
-                        u8 desiredDelta = idx - prevLinkIdx;
+                        u8 desiredDelta = static_cast<u8>(idx - prevLinkIdx);
 #if TURF_WITH_ASSERTS
                         probeDelta = prevLink->exchange(desiredDelta, turf::Relaxed);
                         TURF_ASSERT(probeDelta == 0 || probeDelta == desiredDelta);

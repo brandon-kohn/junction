@@ -121,6 +121,9 @@ private:
     turf::Atomic<typename Details::Table*> m_root;
     mutable MemoryReclamationPolicy m_memoryPolicy;
 
+	template <typename T>
+	void ignore(T const&) const {}
+
 public:
     ConcurrentMap_Leapfrog(ureg capacity = Details::InitialSize) : m_root(Details::Table::create(capacity)) {
     }
@@ -151,6 +154,7 @@ public:
     void publishTableMigration(typename Details::TableMigration* migration) {
         // There are no racing calls to this function.
         typename Details::Table* oldRoot = m_root.loadNonatomic();
+		ignore(oldRoot);
         m_root.store(migration->m_destination, turf::Release);
         TURF_ASSERT(oldRoot == migration->getSources()[0].table);
         // Caller will GC the TableMigration and the source table.
@@ -418,7 +422,7 @@ public:
         Iterator(ConcurrentMap_Leapfrog& map) {
             // Since we've forbidden concurrent inserts (for now), nonatomic would suffice here, but let's plan ahead:
             m_table = map.m_root.load(turf::Consume);
-            m_idx = -1;
+            m_idx = static_cast<turf::intTypes::ureg>(-1);
             next();
         }
 

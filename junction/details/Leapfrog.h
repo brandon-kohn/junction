@@ -171,7 +171,7 @@ struct Leapfrog {
             idx = (idx + delta) & sizeMask;
             group = table->getCellGroups() + (idx >> 2);
             cell = group->cells + (idx & 3);
-            Hash probeHash = cell->hash.load(turf::Relaxed);
+            probeHash = cell->hash.load(turf::Relaxed);
             // Note: probeHash might actually be NULL due to memory reordering of a concurrent insert,
             // but we don't check for it. We just follow the probe chain.
             if (probeHash == hash) {
